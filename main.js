@@ -1,5 +1,6 @@
 //faire npm install dans la console a la racine du projet
 const createExamFile = require('./libs/create_exam_file.js');
+const searchQuestion = require('./libs/searchQuestion.js');
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -21,13 +22,12 @@ async function main() {
       const menu = `Que souhaitez vous faire :
 1 - créer un examen
 2 - rechercher et visualiser une question
-3 - Ajouter une question à un examen
-4 - Générer un fichier d'identification d'un enseignant
-5 - Vérifier la qualité d'une fichier d'examen
-6 - Simuler un test et afficher le bilan
-7 - Analyser les données des examens
-8 - Composer et visualiser le profil d'un examen
-9 - Comparer un profil d'examen à l'un de ceux de la banque de question
+3 - Générer un fichier d'identification d'un enseignant
+4 - Vérifier la qualité d'une fichier d'examen
+5 - Simuler un test et afficher le bilan
+6 - Analyser les données des examens
+7 - Composer et visualiser le profil d'un examen
+8 - Comparer un profil d'examen à l'un de ceux de la banque de question
 0 - Quitter
 Votre choix : `;
 
@@ -38,6 +38,7 @@ Votre choix : `;
           await createExamFile();
           break;
         case "2":
+        await searchQuestion();
           break;
         case "3":
           break;
@@ -50,8 +51,6 @@ Votre choix : `;
         case "7":
           break;
         case "8":
-          break;
-        case "9":
           break;
         case "0":
           console.log("Au revoir !");

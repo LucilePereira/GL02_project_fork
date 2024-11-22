@@ -6,27 +6,24 @@ const readline = require("readline").createInterface({
 async function checkFileName(reponse) {
      // Lire les fichiers dans le dossier courant
      var titre = true;
-     fs.readdir("./examens", (err, files) => {
-        if (err) {
-          console.error("Erreur:", err);
-          return;
-        }
-        
+     try {
+        const files = await fs.promises.readdir("./examens");
         files.forEach((file) => {
-          if (reponse == file) {
+          if (`${reponse}.gift` == file) {
             console.log("Un examen du même nom existe déjà");
             titre = false;
           }
         });
-      });
+      } catch (err) {
+        console.error("Erreur:", err);
+        return;
+      }
     return titre;
 }
 
 async function createFile(reponse){
-    fs.writeFile(`./examens/${reponse}.gift`, '', (err) => {
-        if (err) throw err;
-        console.log('Fichier créé');
-    });
+    await fs.promises.writeFile(`./examens/${reponse}.gift`, '');
+    console.log('Fichier créé');
 }
 
 async function createExamFile() {
