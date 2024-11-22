@@ -38,7 +38,7 @@ Votre choix : `;
           await createExamFile();
           break;
         case "2":
-        await searchQuestion();
+        await searchAddQuestion();
           break;
         case "3":
           break;
