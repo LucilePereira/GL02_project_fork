@@ -55,7 +55,7 @@ function afficheQuestion(questionsWKeywords) {
         "\nConsigne: " +
         questionsWKeywords[i].split("|||")[0] +
         "\n" +
-        exo[exo.length - 1].split(/\{[^}]*\}/g).join("VOTRE REPONSE") +
+        exo[exo.length - 1].split(/\{[^}]*\}/g).join("YOUR ANSWER") +
         "\n-----------------Réponses-------------- " +
         rep?.join("\n")
     );
