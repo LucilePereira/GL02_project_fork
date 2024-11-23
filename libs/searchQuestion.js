@@ -30,7 +30,7 @@ function getQuestionsWkeyword(directory, keywords) {
           continue;
           // console.log("caca"+question)
         }
-        
+
         if (isNewExercise) {
           // console.log('gros ccacaa'+question)
           const parts = question.split("::");
@@ -40,10 +40,11 @@ function getQuestionsWkeyword(directory, keywords) {
         }
         // console.log('coucou')
         for (let keyword of keywords) {
-          console.log(question.toLocaleLowerCase() +" "+keyword.toLowerCase())
+          console.log(
+            question.toLocaleLowerCase() + " " + keyword.toLowerCase()
+          );
           if (question.toLowerCase().includes(keyword.toLowerCase())) {
-            
-        console.log(question)
+            console.log(question);
             questionsWKeywords.push(consigne + "|||" + question);
             break;
           }
@@ -58,13 +59,11 @@ function getQuestionWCateg(dir, categs) {
   fs.readdirSync(dir).forEach((file) => {
     const fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isFile()) {
-      // Si c'est un fichier, lire et afficher le contenu
       const content = fs.readFileSync(fullPath, "utf8");
       const questions = content.split("\n\n");
-      let isNewExercise=true
-      let consigne=""
+      let isNewExercise = true;
+      let consigne = "";
       for (let question of questions) {
-        //console.log(question)
         if (question.substring(0, 1) === "$") {
           continue;
         }
@@ -115,6 +114,7 @@ async function addQuestion(questions) {
     try {
       await fs.promises.writeFile(
         "./examens/" + nomExam + ".gift",
+        questions[numQuest] + "\n\n",
         questions[numQuest] + "\n\n",
         "utf8"
       );
