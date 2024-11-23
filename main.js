@@ -47,6 +47,7 @@ Votre choix : `;
           await qualiteExamen();
           break;
         case "5":
+          await createCVar();
           break;
         case "6":
           break;

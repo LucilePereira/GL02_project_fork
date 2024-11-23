@@ -16,24 +16,34 @@ function getQuestionsWkeyword(directory, keywords) {
       // Si c'est un fichier, lire et afficher le contenu
       const content = fs.readFileSync(fullPath, "utf8");
       const questions = content.split("\n\n");
+      console.log(questions)
       let isNewExercise = true;
       let consigne = "";
       for (let question of questions) {
         if (question.substring(0, 1) === "$") {
+          // console.log('boudin'+question)
           continue;
         }
         if (question.substring(0, 2) === "//") {
+          // console.log("caca"+question)
           isNewExercise = true;
           continue;
+          // console.log("caca"+question)
         }
+        
         if (isNewExercise) {
+          // console.log('gros ccacaa'+question)
           const parts = question.split("::");
           consigne = parts[parts.length - 1];
           isNewExercise = false;
           continue;
         }
+        // console.log('coucou')
         for (let keyword of keywords) {
+          console.log(question.toLocaleLowerCase() +" "+keyword.toLowerCase())
           if (question.toLowerCase().includes(keyword.toLowerCase())) {
+            
+        console.log(question)
             questionsWKeywords.push(consigne + "|||" + question);
             break;
           }
@@ -51,6 +61,8 @@ function getQuestionWCateg(dir, categs) {
       // Si c'est un fichier, lire et afficher le contenu
       const content = fs.readFileSync(fullPath, "utf8");
       const questions = content.split("\n\n");
+      let isNewExercise=true
+      let consigne=""
       for (let question of questions) {
         //console.log(question)
         if (question.substring(0, 1) === "$") {
@@ -103,7 +115,7 @@ async function addQuestion(questions) {
     try {
       await fs.promises.writeFile(
         "./examens/" + nomExam + ".gift",
-        questions[numQuest] + "\n",
+        questions[numQuest] + "\n\n",
         "utf8"
       );
       console.log("Fichier créé avec succès");

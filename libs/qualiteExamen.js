@@ -31,29 +31,30 @@ const askForFileName = () => {
 
   try {
     const fileContent = fs.readFileSync(cheminFile, "utf8");
-    const regex = /::(.*?)::/g;
-    const matches = fileContent.match(regex);
-
-    const questions = matches.map(match => match.replace(/\n\n/g, '').trim());
-
+   // const regex = /::(.*?)::/g;
+   // const matches = fileContent.match(regex);
+    let fichierSplit = fileContent.split("\n\n")
+    console.log(fichierSplit)
+    //const questions = matches.map(match => match.replace(/\n\n/g, '').trim());
+    let nbQuestions = fichierSplit.length - 1
     // Vérifier la présence de doublons
-    const questionSet = new Set(questions); // Créer un Set pour les questions uniques
-    const hasDuplicates = questionSet.size !== questions.length;
-    const questionCount = matches ? matches.length : 0;
+    const questionSet = new Set(fichierSplit); // Créer un Set pour les questions uniques
+    const hasDuplicates = questionSet.size !== fichierSplit.length;
+    //const questionCount = matches ? matches.length : 0;
 
     let message;
     if(hasDuplicates){
-        if (questionCount < 15 || questionCount > 20 ) {
-            message = "L'examen contient " + questionCount + " question(s). \n L'examen contient des doublons. \n L'examen n'est pas valide.";
+        if (nbQuestions < 15 || nbQuestions > 20 ) {
+            message = "L'examen contient " + nbQuestions + " question(s). \n L'examen contient des doublons. \n L'examen n'est pas valide.";
           } else {
-            message = "L'examen contient " + questionCount + " questions. \n L'examen continet des doublons. \n L'examen n'est pas valide.";
+            message = "L'examen contient " + nbQuestions + " questions. \n L'examen continet des doublons. \n L'examen n'est pas valide.";
           }
     }
     else{
-        if (questionCount < 15 || questionCount > 20 ) {
-            message = "L'examen contient " + questionCount + " question(s). \n L'examen ne contient pas de doublons. \n L'examen n'est pas valide.";
+        if (nbQuestions < 15 || nbQuestions > 20 ) {
+            message = "L'examen contient " + nbQuestions + " question(s). \n L'examen ne contient pas de doublons. \n L'examen n'est pas valide.";
           } else {
-            message = "L'examen contient " + questionCount + " questions. \n L'examen ne continet pas de doublons. \n L'examen est valide.";
+            message = "L'examen contient " + nbQuestions + " questions. \n L'examen ne continet pas de doublons. \n L'examen est valide.";
           }
     }
     
