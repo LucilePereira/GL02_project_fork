@@ -6,6 +6,7 @@ const readline = require("readline").createInterface({
 const fs = require("fs");
 const path = require("path");
 const afficheQuestion = require("./afficheQuestion.js");
+const getCategorieQuestion = require("./categorieQuestion.js");
 
 function getQuestionsWkeyword(directory, keywords) {
   var questionsWKeywords = [];
@@ -18,7 +19,6 @@ function getQuestionsWkeyword(directory, keywords) {
       let isNewExercise = true;
       let consigne = "";
       for (let question of questions) {
-        //console.log(question)
         if (question.substring(0, 1) === "$") {
           continue;
         }
@@ -34,9 +34,7 @@ function getQuestionsWkeyword(directory, keywords) {
         }
         for (let keyword of keywords) {
           if (question.toLowerCase().includes(keyword.toLowerCase())) {
-            console.log(question);
             questionsWKeywords.push(consigne + "|||" + question);
-            //console.log(questionsWKeywords[questionsWKeywords.length - 1]);
             break;
           }
         }
@@ -45,7 +43,38 @@ function getQuestionsWkeyword(directory, keywords) {
   });
   return questionsWKeywords;
 }
-async function addQuestion(questionsWKeywords) {
+function getQuestionWCateg(dir, categs) {
+  var questionsWCateg = [];
+  fs.readdirSync(dir).forEach((file) => {
+    const fullPath = path.join(dir, file);
+    if (fs.lstatSync(fullPath).isFile()) {
+      // Si c'est un fichier, lire et afficher le contenu
+      const content = fs.readFileSync(fullPath, "utf8");
+      const questions = content.split("\n\n");
+      for (let question of questions) {
+        //console.log(question)
+        if (question.substring(0, 1) === "$") {
+          continue;
+        }
+        if (question.substring(0, 2) === "//") {
+          isNewExercise = true;
+          continue;
+        }
+        if (isNewExercise) {
+          const parts = question.split("::");
+          consigne = parts[parts.length - 1];
+          isNewExercise = false;
+          continue;
+        }
+        if (categs.includes(getCategorieQuestion(question))) {
+          questionsWCateg.push(consigne + "|||" + question);
+        }
+      }
+    }
+  });
+  return questionsWCateg;
+}
+async function addQuestion(questions) {
   let nomExam = await new Promise((resolve) => {
     readline.question(
       "\nNom de l'examen auquel ajouter une de ces question : ",
@@ -58,24 +87,39 @@ async function addQuestion(questionsWKeywords) {
     }),
     10
   );
+  let isWritten = false;
   fs.readdirSync("./examens").forEach((file) => {
     if (file === nomExam + ".gift") {
       fs.appendFileSync(
         path.join("./examens", file),
-        questionsWKeywords[numQuest] + "\n\n",
+        questions[numQuest] + "\n\n",
         "utf8"
       );
+      isWritten = true;
+      console.log("Fichier modifié !");
     }
   });
+  if (!isWritten) {
+    try {
+      await fs.promises.writeFile(
+        "./examens/" + nomExam + ".gift",
+        questions[numQuest] + "\n",
+        "utf8"
+      );
+      console.log("Fichier créé avec succès");
+    } catch (err) {
+      console.error("Erreur lors de l'écriture du fichier :", err);
+    }
+  }
 }
 
 async function searchAddQuestion() {
   let reponse = "";
-  let questionsWKeywords;
+  let questionsSelected;
   while (reponse != "1" && reponse != "2") {
     reponse = await new Promise((resolve) => {
       readline.question(
-        "\nRechercher par mot clés(1) ou pas type de questions(2) : ",
+        "\nRechercher par mot clés(1) ou par type de questions(2) : ",
         resolve
       );
     });
@@ -83,18 +127,36 @@ async function searchAddQuestion() {
   if (reponse === "1") {
     reponse = await new Promise((resolve) => {
       readline.question(
-        "\nmots clé à rechercher, séparés par une virgule : ",
+        "\nMots clé à rechercher, séparés par une virgule : ",
         resolve
       );
     });
-    questionsWKeywords = getQuestionsWkeyword(
+    questionsSelected = getQuestionsWkeyword(
       "./SujetB_data",
       reponse.split(",")
     );
-    afficheQuestion(questionsWKeywords);
   } else {
+    reponse = await new Promise((resolve) => {
+      readline.question(
+        "\nType de question à rechercher : question ouverte(1), question fermée(2) ",
+        resolve
+      );
+    });
+    if (reponse === "1") {
+      questionsSelected = getQuestionWCateg("./SujetB_data", [
+        "mot manquant",
+        "question ouverte",
+      ]);
+    } else {
+      questionsSelected = getQuestionWCateg("./SujetB_data", [
+        "correspondance",
+        "vrai faux",
+        "choix multiple",
+      ]);
+    }
   }
-  await addQuestion(questionsWKeywords);
+  afficheQuestion(questionsSelected);
+  await addQuestion(questionsSelected);
 }
 
 module.exports = searchAddQuestion;

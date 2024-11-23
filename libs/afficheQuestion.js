@@ -57,7 +57,7 @@ function afficheQuestion(questionsWKeywords) {
         "\n" +
         exo[exo.length - 1].split(/\{[^}]*\}/g).join("YOUR ANSWER") +
         "\n-----------------Réponses-------------- " +
-        rep?.join("\n")
+        (rep?.join("\n") || "\npas de réponse")
     );
   }
 }
