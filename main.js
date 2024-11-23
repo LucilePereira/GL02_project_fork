@@ -2,6 +2,7 @@
 const createExamFile = require('./libs/create_exam_file.js');
 const searchAddQuestion = require('./libs/searchQuestion.js');
 const qualiteExamen = require('./libs/qualiteExamen.js');
+const createCVar = require('./libs/createCVar.js');
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
