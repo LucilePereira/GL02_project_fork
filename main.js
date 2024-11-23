@@ -1,6 +1,6 @@
 //faire npm install dans la console a la racine du projet
 const createExamFile = require('./libs/create_exam_file.js');
-const searchQuestion = require('./libs/searchQuestion.js');
+const searchAddQuestion = require('./libs/searchQuestion.js');
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
