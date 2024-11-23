@@ -1,6 +1,7 @@
 //faire npm install dans la console a la racine du projet
 const createExamFile = require('./libs/create_exam_file.js');
 const searchAddQuestion = require('./libs/searchQuestion.js');
+const qualiteExamen = require('./libs/qualiteExamen.js');
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -11,7 +12,7 @@ function askQuestion(question) {
   return new Promise((resolve) => {
     readline.question(question, (answer) => {
       resolve(answer);
-      readline.prompt(); // Affiche le prompt après chaque question
+    readline.prompt(); // Affiche le prompt après chaque question
     });
   });
 }
@@ -43,6 +44,7 @@ Votre choix : `;
         case "3":
           break;
         case "4":
+          await qualiteExamen();
           break;
         case "5":
           break;
