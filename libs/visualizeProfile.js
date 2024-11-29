@@ -16,7 +16,7 @@ const detectQuestionType = (question) => {
     return 'Questions ouvertes';
 };
 
-/
+
 const extractAnswerBlock = (question) => {
     const match = question.match(/\{([\s\S]*?)\}/);
     return match ? match[1].trim() : '';

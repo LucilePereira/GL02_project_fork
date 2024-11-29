@@ -6,6 +6,7 @@ const createCVar = require('./libs/createCVar.js');
 const analyzeExam = require('./libs/analyzeExam.js');
 const visualizeProfile = require('./libs/visualizeProfile.js');
 const compareProfiles = require('./libs/compareProfiles.js');
+const simulTest = require('./libs/simulTest.js');
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -46,6 +47,7 @@ Votre choix : `;
         await searchAddQuestion();
           break;
         case "3":
+          await simulTest();
           break;
         case "4":
           await qualiteExamen();
@@ -55,7 +57,7 @@ Votre choix : `;
           break;
         case "6":
           await analyzeExam();
-          break;
+         break;
         case "7":
           await visualizeProfile();
           break;
