@@ -3,6 +3,9 @@ const createExamFile = require('./libs/create_exam_file.js');
 const searchAddQuestion = require('./libs/searchQuestion.js');
 const qualiteExamen = require('./libs/qualiteExamen.js');
 const createCVar = require('./libs/createCVar.js');
+const analyzeExam = require('./libs/analyzeExam.js');
+const visualizeProfile = require('./libs/visualizeProfile.js');
+const compareProfiles = require('./libs/compareProfiles.js');
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -51,10 +54,13 @@ Votre choix : `;
           await createCVar();
           break;
         case "6":
+          await analyzeExam();
           break;
         case "7":
+          await visualizeProfile();
           break;
         case "8":
+          await compareProfiles();
           break;
         case "0":
           console.log("Au revoir !");
