@@ -2,10 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
+
 const extractAnswerBlock = (question) => {
     const answerBlockPattern = /(?:=|\~|\#|TRUE|FALSE|T|F|->)[^\n]*/g;
     const matches = (question.match(answerBlockPattern) || []).join(' ');
-    console.log(`Réponses extraites : ${matches}`);  
     return matches;
 };
 
@@ -13,70 +13,53 @@ const extractAnswerBlock = (question) => {
 const detectQuestionType = (question) => {
     const answerBlock = extractAnswerBlock(question);
 
-    
     if (answerBlock.includes('~') && answerBlock.includes('=')) {
-        return 'Choix multiples';
+        return 'QCM';
     }
 
-    
     if (answerBlock.includes('->')) {
-        return 'Correspondance';
+        return 'Corresp';
     }
 
-  
     if (/^\s*(TRUE|FALSE|T|F)\b/i.test(answerBlock.trim())) {
-        return 'Vrai/Faux';
+        return 'V/F';
     }
 
-  
     if (/^#|=\d+(:|..)/i.test(answerBlock)) {
-        return 'Numérique';
+        return 'Num';
     }
 
-   
     if (/\{\}/.test(question)) {
-        return 'Mot manquant';
+        return 'Trous';
     }
 
-    
-    if (question.includes('?') && !answerBlock.includes('=') && !answerBlock.includes('~')) {
-        return 'Questions ouvertes';
-    }
-
-  
-    return 'Questions ouvertes';
+    return 'QRO'; 
 };
 
 
 const analyzeQuestions = (filePath) => {
     if (fs.lstatSync(filePath).isDirectory()) {
-        return {}; 
+        return {};
     }
 
     const content = fs.readFileSync(filePath, 'utf-8');
-   
 
     const questions = {
-        'Choix multiples': 0,
-        'Vrai/Faux': 0,
-        'Correspondance': 0,
-        'Mot manquant': 0,
-        'Numérique': 0,
-        'Questions ouvertes': 0
+        'QCM': 0,
+        'QRO': 0,
+        'V/F': 0,
+        'Corresp': 0,
+        'Num': 0,
+        'Trous': 0,
     };
 
-   
     const questionPattern = /::([^:]+)::([^{]+)\{([^\}]+)\}/g;
     let match;
 
-   
     while ((match = questionPattern.exec(content)) !== null) {
-        const question = match[0]; 
-        const questionType = detectQuestionType(question); 
+        const question = match[0];
+        const questionType = detectQuestionType(question);
 
-        console.log(`Question: "${question}" -> Type: ${questionType}`);
-
-       
         if (questions[questionType] !== undefined) {
             questions[questionType]++;
         }
@@ -85,105 +68,94 @@ const analyzeQuestions = (filePath) => {
     return questions;
 };
 
+const generateTextHistogramComparison = (examData, referenceData, examFileName, referenceFileName) => {
+    const maxCount = Math.max(...Object.values(examData), ...Object.values(referenceData));
+    const scale = Math.max(10, maxCount); // Ajuster l'échelle
+    const types = ['QCM', 'QRO', 'V/F', 'Corresp', 'Num', 'Trous'];
+
+    console.log(`\nComparaison entre "${examFileName}" (gauche) et "${referenceFileName}" (droite)`);
+    console.log('Nb de q°');
+
+  
+    for (let i = scale; i >= 0; i--) {
+        const row = types
+            .map((type) => {
+                const examCount = examData[type] || 0;
+                const refCount = referenceData[type] || 0;
+
+                const leftBar = examCount >= i ? '|' : ' ';
+                const rightBar = refCount >= i ? '|' : ' ';
+                return `${leftBar} ${rightBar}`;
+            })
+            .join('   ');
+
+        const prefix = i % 2 === 0 ? `${String(i).padStart(2, ' ')} |` : '   |';
+        console.log(`${prefix} ${row}`);
+    }
+
+  
+    console.log('   ' + '-'.repeat(types.length * 6 - 1));
+
+   
+    console.log('      ' + types.map(type => `${type.padEnd(5)}`).join('    '));
+};
 
 async function compareProfiles() {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        terminal: false
+        terminal: false,
     });
 
-    
-    const askForFolderPathReference = () => {
-        return new Promise((resolve) => {
-            rl.question("\nChemin du dossier contenant le fichier de référence (ex : 'SujetA_data') : ", (answer) => {
-                resolve(answer.trim());
-            });
-        });
+    const askQuestion = (query) => {
+        return new Promise((resolve) => rl.question(query, resolve));
     };
 
-    
-    const askForFolderPathExam = () => {
-        return new Promise((resolve) => {
-            rl.question("\nChemin du dossier contenant le fichier d'examen (ex : 'SujetB_data') : ", (answer) => {
-                resolve(answer.trim()); 
-        });
-    };
-
-   
-    const askForReferenceFile = () => {
-        return new Promise((resolve) => {
-            rl.question("\nNom du fichier moyen de référence (ex : 'moyen.gift') : ", (answer) => {
-                resolve(answer.trim()); 
-            });
-        });
-    };
-
-    
-    const askForFile = () => {
-        return new Promise((resolve) => {
-            rl.question("\nNom du fichier d'examen (ex : 'examen.gift') : ", (answer) => {
-                resolve(answer.trim()); 
-            });
-        });
-    };
-
-   
-    let folderPathReference = await askForFolderPathReference();
-
-   
+    let folderPathReference = await askQuestion("\nChemin du dossier contenant le fichier de référence (ex : 'SujetA_data') : ");
     while (!fs.existsSync(folderPathReference) || !fs.lstatSync(folderPathReference).isDirectory()) {
         console.log(`Le chemin "${folderPathReference}" n'existe pas ou n'est pas un dossier valide.`);
-        folderPathReference = await askForFolderPathReference();
+        folderPathReference = await askQuestion("\nChemin du dossier contenant le fichier de référence : ");
     }
 
-    
-    let referenceFileName = await askForReferenceFile();
-
-    
+    let referenceFileName = await askQuestion("\nNom du fichier moyen de référence (ex : 'moyen.gift') : ");
     let referenceFilePath = path.join(folderPathReference, referenceFileName);
+
     while (!fs.existsSync(referenceFilePath)) {
         console.log(`Le fichier de référence "${referenceFileName}" n'existe pas dans le dossier.`);
-        referenceFileName = await askForReferenceFile();
+        referenceFileName = await askQuestion("\nNom du fichier moyen de référence : ");
         referenceFilePath = path.join(folderPathReference, referenceFileName);
     }
 
     console.log(`Le fichier de référence trouvé : ${referenceFilePath}`);
 
-    
-    let folderPathExam = await askForFolderPathExam();
-
-   
+    let folderPathExam = await askQuestion("\nChemin du dossier contenant le fichier d'examen (ex : 'SujetB_data') : ");
     while (!fs.existsSync(folderPathExam) || !fs.lstatSync(folderPathExam).isDirectory()) {
         console.log(`Le chemin "${folderPathExam}" n'existe pas ou n'est pas un dossier valide.`);
-        folderPathExam = await askForFolderPathExam();
+        folderPathExam = await askQuestion("\nChemin du dossier contenant le fichier d'examen : ");
     }
 
-    
-    let examFileName = await askForFile();
+    let examFileName = await askQuestion("\nNom du fichier d'examen (ex : 'examen.gift') : ");
     let examFilePath = path.join(folderPathExam, examFileName);
 
     while (!fs.existsSync(examFilePath)) {
         console.log(`Le fichier d'examen "${examFileName}" n'existe pas dans le dossier.`);
-        examFileName = await askForFile();
+        examFileName = await askQuestion("\nNom du fichier d'examen : ");
         examFilePath = path.join(folderPathExam, examFileName);
     }
 
     console.log(`Le fichier d'examen trouvé : ${examFilePath}`);
 
-    
-    const examProfile = analyzeQuestions(examFilePath);  
-    const referenceProfile = analyzeQuestions(referenceFilePath);  
+    const examProfile = analyzeQuestions(examFilePath);
+    const referenceProfile = analyzeQuestions(referenceFilePath);
 
    
-    console.log("\nComparaison des profils d'examen (Types de questions) :");
-    const questionTypes = ['Choix multiples', 'Vrai/Faux', 'Correspondance', 'Mot manquant', 'Numérique', 'Questions ouvertes'];
+    generateTextHistogramComparison(examProfile, referenceProfile, examFileName, referenceFileName);
 
-    questionTypes.forEach(type => {
-        console.log(`${type}:`);
-        console.log(`  Examen: ${examProfile[type] || 0} - Référence: ${referenceProfile[type] || 0}`);
-    });
+ 
 }
+
+
+
 
 
 module.exports = compareProfiles;
