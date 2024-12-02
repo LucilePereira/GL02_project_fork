@@ -4,5 +4,12 @@
     "express": "^4.21.1",
     "inquirer": "^8.2.6",
     "plotly": "^1.0.6"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+
+  "devDependencies": {
+    "jasmine": "^3.6.3"
   }
 }

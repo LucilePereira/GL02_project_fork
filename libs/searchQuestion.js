@@ -16,7 +16,6 @@ function getQuestionsWkeyword(directory, keywords) {
       // Si c'est un fichier, lire et afficher le contenu
       const content = fs.readFileSync(fullPath, "utf8");
       const questions = content.split("\n\n");
-      console.log(questions)
       let isNewExercise = true;
       let consigne = "";
       for (let question of questions) {
