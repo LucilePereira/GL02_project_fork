@@ -39,11 +39,7 @@ function getQuestionsWkeyword(directory, keywords) {
         }
         // console.log('coucou')
         for (let keyword of keywords) {
-          console.log(
-            question.toLocaleLowerCase() + " " + keyword.toLowerCase()
-          );
           if (question.toLowerCase().includes(keyword.toLowerCase())) {
-            console.log(question);
             questionsWKeywords.push(consigne + "|||" + question);
             break;
           }
@@ -170,4 +166,4 @@ async function searchAddQuestion() {
   await addQuestion(questionsSelected);
 }
 
-module.exports = searchAddQuestion;
+module.exports = { searchAddQuestion, getQuestionsWkeyword, getQuestionWCateg };

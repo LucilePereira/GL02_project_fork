@@ -1,6 +1,6 @@
 //faire npm install dans la console a la racine du projet
 const createExamFile = require('./libs/create_exam_file.js');
-const searchAddQuestion = require('./libs/searchQuestion.js');
+const {searchAddQuestion} = require('./libs/searchQuestion.js');
 const qualiteExamen = require('./libs/qualiteExamen.js');
 const createCVar = require('./libs/createCVar.js');
 const analyzeExam = require('./libs/analyzeExam.js');
@@ -26,8 +26,8 @@ async function main() {
   try {
     while (true) {
       const menu = `Que souhaitez vous faire :
-1 - créer un examen
-2 - rechercher et visualiser une question
+1 - Créer un examen
+2 - Rechercher, visualiser une question et l'ajouter à un examen
 3 - Générer un fichier d'identification d'un enseignant
 4 - Vérifier la qualité d'une fichier d'examen
 5 - Simuler un test et afficher le bilan
