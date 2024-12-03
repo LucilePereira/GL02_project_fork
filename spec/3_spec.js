@@ -8,8 +8,19 @@ describe("Test 3e spec du cahier des charges", function () {
     this.getQuestionWCateg = getQuestionWCateg;
   });
 
-  xit("Test création fichier exam via ajout question", async function(){
+  it("Test création fichier exam via ajout question", async function(){
+    const questionsSelected = this.getQuestionWCateg("./SujetB_data", [
+      "correspondance",
+      "vrai faux",
+      "choix multiple",
+    ]);
+    let files = await fs.promises.readdir("./examens");
+    const formerLen = files.length;
 
+    //l'enregistrer
+    await this.addQuestionToFile(Math.random().toString(),0,questionsSelected);
+    files = await fs.promises.readdir("./examens");
+    expect(files.length).toEqual(formerLen + 1);
   })
 
   it("Test ajout question fichier exam existant", async function () {
@@ -50,6 +61,7 @@ describe("Test 3e spec du cahier des charges", function () {
       Object.keys(fileCharCount).length
     ); 
     const trueCount = hasChanged.filter(item => item === true).length;
+    await new Promise(resolve => setTimeout(resolve, 500));
     expect(trueCount).toEqual(1);
   });
 });
