@@ -20,24 +20,19 @@ function getQuestionsWkeyword(directory, keywords) {
       let consigne = "";
       for (let question of questions) {
         if (question.substring(0, 1) === "$") {
-          // console.log('boudin'+question)
           continue;
         }
         if (question.substring(0, 2) === "//") {
-          // console.log("caca"+question)
           isNewExercise = true;
           continue;
-          // console.log("caca"+question)
         }
 
         if (isNewExercise) {
-          // console.log('gros ccacaa'+question)
           const parts = question.split("::");
           consigne = parts[parts.length - 1];
           isNewExercise = false;
           continue;
         }
-        // console.log('coucou')
         for (let keyword of keywords) {
           if (question.toLowerCase().includes(keyword.toLowerCase())) {
             questionsWKeywords.push(consigne + "|||" + question);
@@ -93,6 +88,10 @@ async function addQuestion(questions) {
     }),
     10
   );
+  addQuestionToFile(nomExam,numQuest,questions)
+}
+
+async function addQuestionToFile(nomExam,numQuest,questions){
   let isWritten = false;
   fs.readdirSync("./examens").forEach((file) => {
     if (file === nomExam + ".gift") {
@@ -165,4 +164,4 @@ async function searchAddQuestion() {
   await addQuestion(questionsSelected);
 }
 
-module.exports = { searchAddQuestion, getQuestionsWkeyword, getQuestionWCateg, addQuestion };
+module.exports = { searchAddQuestion, getQuestionsWkeyword, getQuestionWCateg, addQuestionToFile };

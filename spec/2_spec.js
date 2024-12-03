@@ -10,9 +10,9 @@ describe("Test deuxieme spec du cahier des charges", function () {
   });
 
   it("Test rechercher une question avec un mot clé", function () {
-    var questionsWKeywords = this.getQuestionsWkeyword("./examens", "computer");
+    var questionsWKeywords = this.getQuestionsWkeyword("./SujetB_data", ["people"]);
     for (let question of questionsWKeywords) {
-      expect(question.toLowerCase().includes("computer")).toEqual(true);
+      expect(question.split("|||")[1].toLowerCase().includes("people")).toEqual(true);
     }
   });
   it("Test rechercher une question par catégorie", function () {

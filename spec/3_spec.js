@@ -2,40 +2,54 @@ const fs = require("fs");
 
 describe("Test 3e spec du cahier des charges", function () {
   beforeAll(function () {
-    const { addQuestion } = require("../libs/searchQuestion");
-    this.searchAddQuestion = searchAddQuestion;
+    const { addQuestionToFile } = require("../libs/searchQuestion");
+    const { getQuestionWCateg } = require("../libs/searchQuestion");
+    this.addQuestionToFile = addQuestionToFile;
+    this.getQuestionWCateg = getQuestionWCateg;
   });
 
-  xit("Test ajout question fichier exam", async function () {
-    let files = await fs.promises.readdir("./examens");
-    const formerLen = files.length;
+  xit("Test création fichier exam via ajout question", async function(){
 
+  })
+
+  it("Test ajout question fichier exam existant", async function () {
+    const questionsSelected = this.getQuestionWCateg("./SujetB_data", [
+      "correspondance",
+      "vrai faux",
+      "choix multiple",
+    ]);
     let fileCharCount = {};
-    fs.readdirSync("./examens").forEach((file) => {
-      fs.readFileSync("./examens/" + file, (err, data) => {
-        fileCharCount.file = data.length;
-      });
+
+    // Lire le répertoire de manière synchrone
+    let files = fs.readdirSync("./examens");
+    
+    // Parcourir chaque fichier dans le répertoire
+    files.forEach((file) => {
+      // Lire le contenu du fichier de manière synchrone
+      const data = fs.readFileSync("./examens/" + file, 'utf8');
+    
+      // Stocker le nombre de caractères dans l'objet fileCharCount
+      fileCharCount[file] = data.length;
     });
-    this.searchAddQuestion();
+    this.addQuestionToFile(Object.keys(fileCharCount)[0],0,questionsSelected);
 
     let hasChanged = [];
-    fs.readdirSync("./examens").forEach((file) => {
-      fs.readFileSync("./examens/" + file, (err, data) => {
-        if (Object.values(fileCharCount).includes(file)) {
-          if (data.length != fileCharCount.file.length) {
-            hasChanged.add(true);
-          } else {
-            hasChanged.add(false);
-          }
+    const fsPromises = fs.promises;
+    files = await fsPromises.readdir("./examens");
+    for (const file of files) {
+        const data = await fsPromises.readFile("./examens/" + file, 'utf8');
+        if (Object.keys(fileCharCount).includes(file)) {
+            if (data.length !== fileCharCount[file]) {
+                hasChanged.push(true);
+            } else {
+                hasChanged.push(false);
+            }
         }
-      });
-    });
-    expect(hasChanged.length).toBeLessThan(
-      Object.values(fileCharCount).length + 2
-    ); //vérifie que 2 fichier n'ont pas été créé
-    expect(
-      !hasChanged.every((value) => value === false) &&
-        hasChanged.length != Object.values(fileCharCount).length
-    ).toEqual(false); //vérifie qu'aucun des fichier existants a été modif si un fichier a été créé ou que un fichier n'a pas été créé si un fichier a été modif
+    }
+    expect(hasChanged.length).toEqual(
+      Object.keys(fileCharCount).length
+    ); 
+    const trueCount = hasChanged.filter(item => item === true).length;
+    expect(trueCount).toEqual(1);
   });
 });

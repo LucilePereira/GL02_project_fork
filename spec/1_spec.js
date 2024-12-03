@@ -13,7 +13,6 @@ describe("Test première spec du cahier des charges", function () {
     expect(await this.checkFileName(nomFile)).toEqual(true);
     let files = await fs.promises.readdir("./examens");
     const formerLen = files.length;
-    console.log(files[0])
     expect(await this.checkFileName(files[0].slice(0,-5))).toEqual(false);
 
     //l'enregistrer
