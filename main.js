@@ -1,5 +1,5 @@
 //faire npm install dans la console a la racine du projet
-const createExamFile = require('./libs/create_exam_file.js');
+const {createExamFile} = require('./libs/create_exam_file.js');
 const {searchAddQuestion} = require('./libs/searchQuestion.js');
 const qualiteExamen = require('./libs/qualiteExamen.js');
 const createCVar = require('./libs/createCVar.js');

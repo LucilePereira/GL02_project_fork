@@ -40,4 +40,4 @@ async function createExamFile() {
     }
   }
 }
-module.exports = createExamFile;
+module.exports = {createExamFile , checkFileName, createFile};

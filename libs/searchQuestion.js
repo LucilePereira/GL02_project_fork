@@ -110,7 +110,6 @@ async function addQuestion(questions) {
       await fs.promises.writeFile(
         "./examens/" + nomExam + ".gift",
         questions[numQuest] + "\n\n",
-        questions[numQuest] + "\n\n",
         "utf8"
       );
       console.log("Fichier créé avec succès");
@@ -166,4 +165,4 @@ async function searchAddQuestion() {
   await addQuestion(questionsSelected);
 }
 
-module.exports = { searchAddQuestion, getQuestionsWkeyword, getQuestionWCateg };
+module.exports = { searchAddQuestion, getQuestionsWkeyword, getQuestionWCateg, addQuestion };
