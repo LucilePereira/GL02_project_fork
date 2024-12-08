@@ -74,7 +74,7 @@ const analyzeGiftFile = (filePath) => {
 };
 
 
-const analyzeExam = (directoryPath = './SujetB_data') => {
+const analyzeExam = (directoryPath = './examens') => {
     try {
         if (!fs.existsSync(directoryPath)) {
             console.error(`Erreur : Le répertoire "${directoryPath}" n'existe pas.`);
@@ -122,7 +122,7 @@ const analyzeExam = (directoryPath = './SujetB_data') => {
 
 // Exécution directe 
 if (require.main === module) {
-    analyzeExam('./SujetB_data');
+    analyzeExam('./examens');
 }
 
 module.exports = analyzeExam;

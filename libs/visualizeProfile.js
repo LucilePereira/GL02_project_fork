@@ -114,13 +114,15 @@ const visualizeFileProfile = async (filePath) => {
 };
 
 
-const visualizeProfile = async (directoryPath = './SujetB_data') => {
+const visualizeProfile = async (directoryPath = './examens') => {
     try {
+        // Vérifie si le répertoire existe
         if (!fs.existsSync(directoryPath)) {
             console.error(`Erreur : Le répertoire "${directoryPath}" n'existe pas.`);
             return;
         }
 
+        // Récupère la liste des fichiers .gift dans le répertoire
         const files = fs.readdirSync(directoryPath).filter((file) => file.endsWith('.gift'));
 
         if (files.length === 0) {
@@ -128,50 +130,31 @@ const visualizeProfile = async (directoryPath = './SujetB_data') => {
             return;
         }
 
-        const answers = await inquirer.prompt([
+        // Demande à l'utilisateur de choisir un fichier à analyser
+       const answers = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'file',
                 message: 'Choisissez un fichier .gift à analyser :',
                 choices: files,
             },
-        ]);
+        ]); 
 
+/* 	const answers =   { file : 'EM-U5-p34-Voc.gift'};
+ */
+        // Crée le chemin complet vers le fichier sélectionné
         const selectedFilePath = path.join(directoryPath, answers.file);
+
+        // Appelle la fonction pour analyser le fichier
         await visualizeFileProfile(selectedFilePath);
+
     } catch (error) {
         console.error('Erreur lors de la sélection ou de l\'analyse du fichier .gift :', error.message);
     }
 };
 
-
-const showMenu = async () => {
-    while (true) {
-        const answers = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'action',
-                message: 'Que voulez-vous faire ?',
-                choices: ['Visualiser un fichier .gift', 'Quitter'],
-            },
-        ]);
-
-        switch (answers.action) {
-            case 'Visualiser un fichier .gift':
-                await visualizeProfile();
-                break;
-            case 'Quitter':
-                console.log('Au revoir !');
-                process.exit(0); 
-        }
-    }
-};
-
+module.exports = visualizeProfile;
 
 if (require.main === module) {
-    showMenu();
+    main();
 }
-
-
-
-module.exports = visualizeProfile;
