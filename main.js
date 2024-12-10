@@ -47,13 +47,13 @@ Votre choix : `;
         await searchAddQuestion();
           break;
         case "3":
-          await simulTest();
+          await createCVar();
           break;
         case "4":
           await qualiteExamen();
           break;
         case "5":
-          await createCVar();
+          await simulTest();
           break;
         case "6":
           await analyzeExam();
