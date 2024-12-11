@@ -34,7 +34,7 @@ const askForFileName = () => {
    // const regex = /::(.*?)::/g;
    // const matches = fileContent.match(regex);
     let fichierSplit = fileContent.split("\n\n")
-    console.log(fichierSplit)
+    
     //const questions = matches.map(match => match.replace(/\n\n/g, '').trim());
     let nbQuestions = fichierSplit.length - 1
     // Vérifier la présence de doublons
