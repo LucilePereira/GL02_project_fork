@@ -10,7 +10,6 @@ const getCategorieQuestion = require("./categorieQuestion.js");
 
 function getQuestionsWkeyword(directory, keywords) {
   var questionsWKeywords = [];
-  console.log(keywords)
   fs.readdirSync(directory).forEach((file) => {
     const fullPath = path.join(directory, file);
     if (fs.lstatSync(fullPath).isFile()) {
