@@ -1,6 +1,5 @@
-const fs = require('fs');
 const path = require('path');
-const inquirer = require('inquirer');
+const {askAndOpenFile} = require('./askAndOpen.js');
 
 
 const detectQuestionType = (question) => {
@@ -39,8 +38,7 @@ const extractAnswerBlock = (question) => {
     return match ? match[1].trim() : '';
 };
 
-const analyzeGiftFile = (filePath) => {
-    const content = fs.readFileSync(filePath, 'utf-8');
+const analyzeGiftFile = (content, filePath) => {
 
     const questionTypes = {
         QCM: 0,
@@ -97,9 +95,9 @@ const generateTextHistogram = (data, fileName) => {
 };
 
 
-const visualizeFileProfile = async (filePath) => {
+const visualizeFileProfile = async (content, filePath) => {
     console.log(`Tentative d'analyse du fichier : ${filePath}`);
-    const questionTypes = analyzeGiftFile(filePath);
+    const questionTypes = analyzeGiftFile(content, filePath);
 
     if (!questionTypes) return;
 
@@ -114,43 +112,12 @@ const visualizeFileProfile = async (filePath) => {
 };
 
 
-const visualizeProfile = async (directoryPath = './examens') => {
-    try {
-        // Vérifie si le répertoire existe
-        if (!fs.existsSync(directoryPath)) {
-            console.error(`Erreur : Le répertoire "${directoryPath}" n'existe pas.`);
-            return;
-        }
+const visualizeProfile = async () => {
+    // Crée le chemin complet vers le fichier sélectionné
+    const file = await askAndOpenFile();
 
-        // Récupère la liste des fichiers .gift dans le répertoire
-        const files = fs.readdirSync(directoryPath).filter((file) => file.endsWith('.gift'));
-
-        if (files.length === 0) {
-            console.log('Aucun fichier .gift trouvé dans le répertoire.');
-            return;
-        }
-
-        // Demande à l'utilisateur de choisir un fichier à analyser
-       const answers = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'file',
-                message: 'Choisissez un fichier .gift à analyser :',
-                choices: files,
-            },
-        ]); 
-
-/* 	const answers =   { file : 'EM-U5-p34-Voc.gift'};
- */
-        // Crée le chemin complet vers le fichier sélectionné
-        const selectedFilePath = path.join(directoryPath, answers.file);
-
-        // Appelle la fonction pour analyser le fichier
-        await visualizeFileProfile(selectedFilePath);
-
-    } catch (error) {
-        console.error('Erreur lors de la sélection ou de l\'analyse du fichier .gift :', error.message);
-    }
+    // Appelle la fonction pour analyser le fichier
+    await visualizeFileProfile(file.data, file.path);
 };
 
 module.exports = visualizeProfile;
