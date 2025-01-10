@@ -42,7 +42,7 @@ plotly : Génère des graphiques interactifs.
 - Si vous rencontrez des erreurs, vérifiez que toutes les dépendances nécessaires sont correctement installées.
   
 ## Licence
-**GNU GPLv3**
+**CeCILL**
 ## Version
 Version 1.1
 ## Liste des contributeurs et contributrices
