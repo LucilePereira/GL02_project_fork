@@ -54,7 +54,7 @@ async function simulTest() {
         (rep?.join("\n") || "\npas de réponse")
     );
 
-    tableauReponseU[i] = await askQuestion("Votre réponse : ");
+    tableauReponseU[i] = await askQuestion("Bien vouloir ecrire entierement la réponse en toute lettre : ");
     if(tableauReponseU[i]!=tableauBonnesReponses[i]){
       nbErreur ++
     }
