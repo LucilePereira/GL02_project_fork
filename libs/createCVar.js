@@ -1,4 +1,5 @@
 const fs = require("fs");
+const {askQuestion} = require("./askAndOpen.js");
 
 
 async function createCVar() {
@@ -9,19 +10,13 @@ async function createCVar() {
     output: process.stdout,
     terminal:false
   });
-
-  function askInfoDoc(query) {
-    return new Promise((resolve) => 
-      readline.question(query,
-        resolve)
-    );
-  };
+  
   //fonction qui verifie si le fichier nom_prenom existe deja a partir des noms et prenoms donnés 
   async function askValidName() {
     let nom, prenom, fileName;
     while (true) {
-      nom = await askInfoDoc("Saisissez votre nom : ");
-      prenom = await askInfoDoc("Saisissez votre prénom : ");
+      nom = await askQuestion("Saisissez votre nom : ");
+      prenom = await askQuestion("Saisissez votre prénom : ");
       fileName = `./Vcard_files/${nom}_${prenom}.cvr`;
 
       if (fs.existsSync(fileName)) {
@@ -46,15 +41,15 @@ async function createCVar() {
 
   let mail;
   while (true) {
-    mail = await askInfoDoc("Saisissez votre adresse mail : ");
+    mail = await askQuestion("Saisissez votre adresse mail : ");
     if (isValidEmail(mail)) {
       break; 
     } else {
       console.log("Adresse email invalide. Veuillez saisir une adresse valide.");
     }
   }
-  const matiere = await askInfoDoc ("Saisissez les matières que vous enseignez (séparées d'une virgule !) : ")
-  const etablissement = await askInfoDoc ("Saisissez les établissements dans lesquels vous enseignez (séparés d'une virgule !) : ")
+  const matiere = await askQuestion ("Saisissez les matières que vous enseignez (séparées d'une virgule !) : ")
+  const etablissement = await askQuestion ("Saisissez les établissements dans lesquels vous enseignez (séparés d'une virgule !) : ")
   const listetablissement = etablissement.split(",").map((etablissement) => etablissement.trim()).join(";");
     const listMatiere = matiere.split(",").map((matiere) => matiere.trim()).join(";");
 
@@ -72,6 +67,6 @@ async function createCVar() {
 const vCardString = vCardContent.join("\r\n");
 const fileName = `./Vcard_files/${nom}_${prenom}.cvr`;
 fs.writeFileSync(fileName, vCardString.trim());
-console.log(`Le fichier ${nom}_${prenom}.cvr a été créé avec succès !`)
+    console.log(`Le fichier ${nom}_${prenom}.cvr a été créé avec succès !`)
 }
 module.exports = createCVar;

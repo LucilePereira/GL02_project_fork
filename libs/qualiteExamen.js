@@ -1,39 +1,9 @@
-const fs = require("fs");
+const {askAndOpenFile} = require('./askAndOpen.js');
 
 
-async function qualiteExamen() {
-  // Demander à l'utilisateur de saisir le nom du fichier d'examen
-  const readline = require("readline").createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal:false
-  });
-
-
-const askForFileName = () => {
-    return new Promise((resolve) => {
-      readline.question("\nTitre de l'examen : ", (answer) => {
-        resolve(answer);
-      });
-    });
-  };
-
-  let reponse = await askForFileName(); 
-  
-  let cheminFile = "./examens/" + reponse + ".gift";
-
-  // Tester si le nom donné existe 
-  while (!fs.existsSync(cheminFile)) {
-    console.log(`Le fichier "${reponse}.gift" n'existe pas. Veuillez entrer un nom valide.`);
-    reponse = await askForFileName(); 
-    cheminFile = "./examens/" + reponse + ".gift"; 
-  }
-
-  try {
-    const fileContent = fs.readFileSync(cheminFile, "utf8");
-   // const regex = /::(.*?)::/g;
-   // const matches = fileContent.match(regex);
-    let fichierSplit = fileContent.split("\n\n")
+async function qualiteExamen() {  
+    let file = await askAndOpenFile(); 
+    let fichierSplit = file.data.split("\n\n")
     
     //const questions = matches.map(match => match.replace(/\n\n/g, '').trim());
     let nbQuestions = fichierSplit.length - 1
@@ -45,27 +15,21 @@ const askForFileName = () => {
     let message;
     if(hasDuplicates){
         if (nbQuestions < 15 || nbQuestions > 20 ) {
-            message = "L'examen contient " + nbQuestions + " question(s). \n L'examen contient des doublons. \n L'examen n'est pas valide.";
+            message = "L'examen contient " + nbQuestions + " question(s). \n L'examen contient des doublons. \n L'examen n'est pas valide car il n'a pas entre 15 et 20 questions et qu'il a des doublons'.";
           } else {
-            message = "L'examen contient " + nbQuestions + " questions. \n L'examen continet des doublons. \n L'examen n'est pas valide.";
+            message = "L'examen contient " + nbQuestions + " questions. \n L'examen contient des doublons. \n L'examen n'est pas valide car il a des doublons.";
           }
     }
     else{
         if (nbQuestions < 15 || nbQuestions > 20 ) {
-            message = "L'examen contient " + nbQuestions + " question(s). \n L'examen ne contient pas de doublons. \n L'examen n'est pas valide.";
+            message = "L'examen contient " + nbQuestions + " question(s). \n L'examen ne contient pas de doublons. \n L'examen n'est pas valide car il n'a pas entre 15 et 20 questions.";
           } else {
-            message = "L'examen contient " + nbQuestions + " questions. \n L'examen ne continet pas de doublons. \n L'examen est valide.";
+            message = "L'examen contient " + nbQuestions + " questions. \n L'examen ne contient pas de doublons. \n L'examen est valide.";
           }
     }
     
 
     console.log(message);
-  } 
-  catch (error) {
-    console.error("Une erreur est survenue lors de la lecture du fichier : " + error.message);
-  } finally {
-    readline.close(); // Fermer l'interface readline
-  }
 }
 
 module.exports = qualiteExamen;

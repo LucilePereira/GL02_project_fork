@@ -1,5 +1,6 @@
-const fs = require('fs');
 const path = require('path');
+const {openFile} = require('./askAndOpen.js');
+const {askAndOpenDirectory} = require('./askAndOpen.js');
 
 
 const detectQuestionType = (question) => {
@@ -47,8 +48,8 @@ const extractAnswerBlock = (question) => {
 
 
 const analyzeGiftFile = (filePath) => {
-    const content = fs.readFileSync(filePath, 'utf-8');
-
+    const file = openFile(filePath);
+    
     // Initialisation 
     const questionTypes = {
         'Choix multiples': 0,
@@ -59,7 +60,7 @@ const analyzeGiftFile = (filePath) => {
         'Questions ouvertes': 0,
     };
 
-    const questions = content.match(/::.*?::.*?\{.*?\}/gs);
+    const questions = file.match(/::.*?::.*?\{.*?\}/gs);
 
     if (questions) {
         questions.forEach((question) => {
@@ -74,55 +75,47 @@ const analyzeGiftFile = (filePath) => {
 };
 
 
-const analyzeExam = (directoryPath = './examens') => {
-    try {
-        if (!fs.existsSync(directoryPath)) {
-            console.error(`Erreur : Le répertoire "${directoryPath}" n'existe pas.`);
-            return;
-        }
+const analyzeExam = async () => {
+    let directory = await askAndOpenDirectory();
+    const files = directory.data.filter((file) => file.endsWith('.gift'));
 
-        const files = fs.readdirSync(directoryPath).filter((file) => file.endsWith('.gift'));
-
-        if (files.length === 0) {
-            console.log('Aucun fichier .gift trouvé dans le répertoire.');
-            return;
-        }
-
-        console.log(`Analyse des fichiers .gift dans "${directoryPath}"...\n`);
-
-        const totalQuestionTypes = {
-            'Choix multiples': 0,
-            'Vrai/Faux': 0,
-            'Correspondance': 0,
-            'Numérique': 0,
-            'Mot manquant': 0,
-            'Questions ouvertes': 0,
-        };
-
-        files.forEach((file) => {
-            const filePath = path.join(directoryPath, file);
-            const questionTypes = analyzeGiftFile(filePath);
-
-            console.log(`Fichier : ${file}`);
-            Object.entries(questionTypes).forEach(([type, count]) => {
-                console.log(`  ${type.padEnd(20)}: ${count}`);
-                totalQuestionTypes[type] += count;
-            });
-            console.log();
-        });
-
-        console.log('--- Résumé global ---');
-        Object.entries(totalQuestionTypes).forEach(([type, count]) => {
-            console.log(`${type.padEnd(20)}: ${count}`);
-        });
-    } catch (error) {
-        console.error('Erreur lors de l’analyse des fichiers .gift :', error.message);
+    if (files.length === 0) {
+        console.log('Aucun fichier .gift trouvé dans le répertoire.');
+        return;
     }
+
+    console.log(`Analyse des fichiers .gift dans "${directory.path}"...\n`);
+
+    const totalQuestionTypes = {
+        'Choix multiples': 0,
+        'Vrai/Faux': 0,
+        'Correspondance': 0,
+        'Numérique': 0,
+        'Mot manquant': 0,
+        'Questions ouvertes': 0,
+    };
+
+    files.forEach((file) => {
+        const filePath = path.join(directory.path, file);
+        const questionTypes = analyzeGiftFile(filePath);
+
+        console.log(`Fichier : ${file}`);
+        Object.entries(questionTypes).forEach(([type, count]) => {
+            console.log(`  ${type.padEnd(20)}: ${count}`);
+            totalQuestionTypes[type] += count;
+        });
+        console.log();
+    });
+
+    console.log('--- Résumé global ---');
+    Object.entries(totalQuestionTypes).forEach(([type, count]) => {
+        console.log(`${type.padEnd(20)}: ${count}`);
+    });
+    console.log();
 };
 
-// Exécution directe 
-if (require.main === module) {
-    analyzeExam('./examens');
-}
-
 module.exports = analyzeExam;
+
+if (require.main === module) {
+    main();
+}

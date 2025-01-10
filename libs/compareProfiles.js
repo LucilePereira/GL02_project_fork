@@ -1,6 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+const {askAndOpenFile} = require('./askAndOpen.js');
 
 
 const extractAnswerBlock = (question) => {
@@ -37,13 +35,7 @@ const detectQuestionType = (question) => {
 };
 
 
-const analyzeQuestions = (filePath) => {
-    if (fs.lstatSync(filePath).isDirectory()) {
-        return {};
-    }
-
-    const content = fs.readFileSync(filePath, 'utf-8');
-
+const analyzeQuestions = (content) => {
     const questions = {
         'QCM': 0,
         'QRO': 0,
@@ -101,61 +93,18 @@ const generateTextHistogramComparison = (examData, referenceData, examFileName, 
 };
 
 async function compareProfiles() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        terminal: false,
-    });
 
-    const askQuestion = (query) => {
-        return new Promise((resolve) => rl.question(query, resolve));
-    };
+    let referenceFile = await askAndOpenFile("\nNom du fichier moyen de référence (ex : 'moyen.gift') : ");
+    console.log(`Le fichier de référence trouvé : ${referenceFile.path}`);
+    
 
-    let folderPathReference = await askQuestion("\nChemin du dossier contenant le fichier de référence (ex : 'SujetA_data') : ");
-    while (!fs.existsSync(folderPathReference) || !fs.lstatSync(folderPathReference).isDirectory()) {
-        console.log(`Le chemin "${folderPathReference}" n'existe pas ou n'est pas un dossier valide.`);
-        folderPathReference = await askQuestion("\nChemin du dossier contenant le fichier de référence : ");
-    }
+    let examFile = await askAndOpenFile("\nNom du fichier d'examen (ex : 'examen.gift') : ");
+    console.log(`Le fichier d'examen trouvé : ${examFile.path}`);
 
-    let referenceFileName = await askQuestion("\nNom du fichier moyen de référence (ex : 'moyen.gift') : ");
-    let referenceFilePath = path.join(folderPathReference, referenceFileName);
-
-    while (!fs.existsSync(referenceFilePath)) {
-        console.log(`Le fichier de référence "${referenceFileName}" n'existe pas dans le dossier.`);
-        referenceFileName = await askQuestion("\nNom du fichier moyen de référence : ");
-        referenceFilePath = path.join(folderPathReference, referenceFileName);
-    }
-
-    console.log(`Le fichier de référence trouvé : ${referenceFilePath}`);
-
-    let folderPathExam = await askQuestion("\nChemin du dossier contenant le fichier d'examen (ex : 'SujetB_data') : ");
-    while (!fs.existsSync(folderPathExam) || !fs.lstatSync(folderPathExam).isDirectory()) {
-        console.log(`Le chemin "${folderPathExam}" n'existe pas ou n'est pas un dossier valide.`);
-        folderPathExam = await askQuestion("\nChemin du dossier contenant le fichier d'examen : ");
-    }
-
-    let examFileName = await askQuestion("\nNom du fichier d'examen (ex : 'examen.gift') : ");
-    let examFilePath = path.join(folderPathExam, examFileName);
-
-    while (!fs.existsSync(examFilePath)) {
-        console.log(`Le fichier d'examen "${examFileName}" n'existe pas dans le dossier.`);
-        examFileName = await askQuestion("\nNom du fichier d'examen : ");
-        examFilePath = path.join(folderPathExam, examFileName);
-    }
-
-    console.log(`Le fichier d'examen trouvé : ${examFilePath}`);
-
-    const examProfile = analyzeQuestions(examFilePath);
-    const referenceProfile = analyzeQuestions(referenceFilePath);
-
+    const examProfile = analyzeQuestions(examFile.data);
+    const referenceProfile = analyzeQuestions(referenceFile.data);
    
-    generateTextHistogramComparison(examProfile, referenceProfile, examFileName, referenceFileName);
-
- 
+    generateTextHistogramComparison(examProfile, referenceProfile, examFile.path, referenceFile.path); 
 }
-
-
-
-
 
 module.exports = compareProfiles;
