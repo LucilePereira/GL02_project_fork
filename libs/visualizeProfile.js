@@ -82,15 +82,15 @@ const generateTextHistogram = (data, fileName) => {
         const row = types
             .map((type) => {
                 const count = data[type] || 0;
-                return count >= i ? '|' : ' ';
+                return count >= i ? ' '.repeat(type.length / 2) + '|' +  ' '.repeat(type.length / 2)  : ' '.repeat(type.length);
             })
             .join('   ');
 
-        const prefix = i % 2 === 0 ? `${String(i).padStart(2, ' ')} |` : '   |';
+        const prefix = i % 2 === 0 ? `${String(i).padStart(2, 'a')} |` : '   |';
         console.log(`${prefix} ${row}`);
     }
 
-    console.log('   ' + '-'.repeat(types.length * 4 - 1));
+    console.log('   ' + '--'.repeat(types.length * 4 - 1));
     console.log('     ' + types.join('   '));
 };
 
